@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "328426723780",
+    "firebase_url": "https://yoga-class-a9dad-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "yoga-class-a9dad",
+    "storage_bucket": "yoga-class-a9dad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328426723780:android:3ddd3722407c70afdaec91",
+        "android_client_info": {
+          "package_name": "com.example.comp1786_su25"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuUZjSw-TSI6Kob98Lj6tTl3i0d-O8nUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328426723780:android:60633d8f5026dafedaec91",
+        "android_client_info": {
+          "package_name": "com.example.comp1876_su25_crossapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuUZjSw-TSI6Kob98Lj6tTl3i0d-O8nUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
