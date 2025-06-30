@@ -117,19 +117,23 @@ class _HomePageState extends State<HomePage> {
           });
         }
 
-        setState(() {
-          items = tempItems;
-          filteredItems = tempItems; // Initialize filtered items
-        });
+        if (mounted) {
+          setState(() {
+            items = tempItems;
+            filteredItems = tempItems; // Initialize filtered items
+          });
+        }
       }
     } catch (e) {
       print('Error loading classes: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error loading classes: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading classes: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -148,34 +152,36 @@ class _HomePageState extends State<HomePage> {
 
   // Function to filter classes based on search criteria
   void _filterClasses() {
-    setState(() {
-      filteredItems = items.where((item) {
-        final classNameMatch = item['class_name']
-            .toString()
-            .toLowerCase()
-            .contains(_searchController.text.toLowerCase());
+    if (mounted) {
+      setState(() {
+        filteredItems = items.where((item) {
+          final classNameMatch = item['class_name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
 
-        bool dayOfWeekMatch = true;
-        if (_selectedDate != null) {
-          try {
-            // Parse the YYYY-MM-DD format from the database
-            final itemDateStr = item['day_of_week'].toString();
-            if (itemDateStr != '0-0-0' && itemDateStr.isNotEmpty) {
-              final itemDate = DateTime.parse(itemDateStr);
-              // Compare the weekday (1 = Monday, 7 = Sunday)
-              dayOfWeekMatch = itemDate.weekday == _selectedDate!.weekday;
-            } else {
+          bool dayOfWeekMatch = true;
+          if (_selectedDate != null) {
+            try {
+              // Parse the YYYY-MM-DD format from the database
+              final itemDateStr = item['day_of_week'].toString();
+              if (itemDateStr != '0-0-0' && itemDateStr.isNotEmpty) {
+                final itemDate = DateTime.parse(itemDateStr);
+                // Compare the weekday (1 = Monday, 7 = Sunday)
+                dayOfWeekMatch = itemDate.weekday == _selectedDate!.weekday;
+              } else {
+                dayOfWeekMatch = false;
+              }
+            } catch (e) {
+              // If parsing fails, exclude this item from results
               dayOfWeekMatch = false;
             }
-          } catch (e) {
-            // If parsing fails, exclude this item from results
-            dayOfWeekMatch = false;
           }
-        }
 
-        return classNameMatch && dayOfWeekMatch;
-      }).toList();
-    });
+          return classNameMatch && dayOfWeekMatch;
+        }).toList();
+      });
+    }
   }
 
   // Function to show date picker
@@ -190,21 +196,25 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _selectedDayOfWeek = _dayOfWeekMap[picked.weekday];
-      });
-      _filterClasses();
+      if (mounted) {
+        setState(() {
+          _selectedDate = picked;
+          _selectedDayOfWeek = _dayOfWeekMap[picked.weekday];
+        });
+        _filterClasses();
+      }
     }
   }
 
   // Function to clear date filter
   void _clearDateFilter() {
-    setState(() {
-      _selectedDate = null;
-      _selectedDayOfWeek = null;
-    });
-    _filterClasses();
+    if (mounted) {
+      setState(() {
+        _selectedDate = null;
+        _selectedDayOfWeek = null;
+      });
+      _filterClasses();
+    }
   }
 
   @override
@@ -406,34 +416,38 @@ class _HomePageState extends State<HomePage> {
                                       onPressed: () {
                                         final cartService = CartService();
                                         if (cartService.isInCart(item['id'])) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                '${item['class_name']} is already in your cart',
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  '${item['class_name']} is already in your cart',
+                                                ),
+                                                backgroundColor: Colors.orange,
+                                                duration: const Duration(
+                                                  seconds: 2,
+                                                ),
                                               ),
-                                              backgroundColor: Colors.orange,
-                                              duration: const Duration(
-                                                seconds: 2,
-                                              ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         } else {
                                           cartService.addToCart(item);
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Added ${item['class_name']} to cart',
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Added ${item['class_name']} to cart',
+                                                ),
+                                                backgroundColor: Colors.green,
+                                                duration: const Duration(
+                                                  seconds: 2,
+                                                ),
                                               ),
-                                              backgroundColor: Colors.green,
-                                              duration: const Duration(
-                                                seconds: 2,
-                                              ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(

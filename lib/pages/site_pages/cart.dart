@@ -30,8 +30,8 @@ class _CartState extends State<Cart> {
 
   void _onCartChanged() {
     if (mounted) {
-      // Add a small delay to prevent jarring transitions
-      Future.microtask(() {
+      // Add a delay to prevent jarring transitions and scrolling issues
+      Future.delayed(const Duration(milliseconds: 150), () {
         if (mounted) setState(() {});
       });
     }
@@ -41,9 +41,14 @@ class _CartState extends State<Cart> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 400),
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(opacity: animation, child: child);
+        },
         child: _cartService.cartItems.isEmpty
-            ? const EmptyCartWidget()
+            ? const EmptyCartWidget(key: ValueKey('empty_cart'))
             : Column(
                 key: const ValueKey('cart_content'),
                 children: [

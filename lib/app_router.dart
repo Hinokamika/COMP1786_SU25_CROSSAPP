@@ -4,7 +4,6 @@ import 'package:comp1876_su25_crossapp/pages/main_pages/login_page.dart';
 import 'package:comp1876_su25_crossapp/pages/main_pages/menu_page.dart';
 import 'package:comp1876_su25_crossapp/pages/main_pages/register_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/cart.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/order_confirmation_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/home_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/profile_page.dart';
 import 'package:flutter/material.dart';

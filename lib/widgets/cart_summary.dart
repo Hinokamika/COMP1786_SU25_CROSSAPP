@@ -11,6 +11,9 @@ class CartSummary extends StatelessWidget {
   final String backButtonText;
   final String checkoutButtonText;
 
+  // Add processing flag to prevent multiple simultaneous checkouts
+  static bool _isProcessingCheckout = false;
+
   const CartSummary({
     super.key,
     required this.cartService,
@@ -166,6 +169,10 @@ class CartSummary extends StatelessWidget {
       // Use custom checkout callback
       onCheckout!();
     } else {
+      // Prevent multiple simultaneous checkout operations
+      if (_isProcessingCheckout) return;
+      _isProcessingCheckout = true;
+
       // Default checkout behavior with Firebase save
       try {
         // Show loading indicator
@@ -190,8 +197,8 @@ class CartSummary extends StatelessWidget {
             onConfirm: () {
               // Clear cart after dialog is closed
               cartService.clearCart();
-              // Show success message with a small delay to ensure smooth transition
-              Future.delayed(const Duration(milliseconds: 100), () {
+              // Show success message with increased delay to ensure smooth transition
+              Future.delayed(const Duration(milliseconds: 300), () {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -204,7 +211,11 @@ class CartSummary extends StatelessWidget {
               });
             },
           );
+
+          // Reset processing flag
+          _isProcessingCheckout = false;
         } else {
+          _isProcessingCheckout = false;
           // Show error message
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -217,8 +228,15 @@ class CartSummary extends StatelessWidget {
           }
         }
       } catch (e) {
+        _isProcessingCheckout = false;
         // Close loading dialog if still open
-        if (context.mounted) Navigator.of(context).pop();
+        if (context.mounted) {
+          try {
+            Navigator.of(context).pop();
+          } catch (_) {
+            // Dialog might already be closed
+          }
+        }
 
         // Show error message
         if (context.mounted) {
