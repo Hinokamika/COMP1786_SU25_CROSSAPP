@@ -1,7 +1,5 @@
 import 'package:comp1876_su25_crossapp/pages/site_pages/home_page.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/noti_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/profile_page.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/search_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/cart.dart';
 import 'package:comp1876_su25_crossapp/widgets/shopping_cart_dropdown.dart';
 import 'package:comp1876_su25_crossapp/services/cart_service.dart';
@@ -74,21 +72,6 @@ class _MenuPageState extends State<MenuPage> {
             onRemoveItem: removeFromCart,
             onUpdateQuantity: updateQuantity,
             onViewCart: viewCart,
-          ),
-          PopupMenuButton<String>(
-            onSelected: (String route) {
-              Navigator.pushNamed(context, route);
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: '/Profile',
-                child: Text('Profile Settings'),
-              ),
-              const PopupMenuItem<String>(
-                value: '/About',
-                child: Text('About'),
-              ),
-            ],
           ),
         ],
       ),

@@ -4,11 +4,9 @@ import 'package:comp1876_su25_crossapp/pages/main_pages/login_page.dart';
 import 'package:comp1876_su25_crossapp/pages/main_pages/menu_page.dart';
 import 'package:comp1876_su25_crossapp/pages/main_pages/register_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/cart.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/confirm_bill.dart';
+import 'package:comp1876_su25_crossapp/pages/site_pages/order_confirmation_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/home_page.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/noti_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/profile_page.dart';
-import 'package:comp1876_su25_crossapp/pages/site_pages/search_page.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter extends StatelessWidget {
@@ -27,13 +25,7 @@ class AppRouter extends StatelessWidget {
         '/ShowCart': (context) => const Cart(), // Placeholder for cart page
         '/ProfilePage': (context) =>
             const ProfilePage(), // Placeholder for profile page
-        '/SearchPage': (context) =>
-            const SearchPage(), // Placeholder for search page
-        '/NotificationPage': (context) =>
-            const NotificationPage(), // Placeholder for notification page
         '/HomePage': (context) => const HomePage(),
-        '/ConfirmBillPage': (context) =>
-            const ConfirmBillPage(), // Placeholder for confirm bill page
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/') {

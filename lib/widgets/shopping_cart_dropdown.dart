@@ -138,30 +138,12 @@ class _ShoppingCartDropdownState extends State<ShoppingCartDropdown> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                onPressed: () {
-                  widget.onUpdateQuantity(item['id'], item['quantity'] - 1);
-                },
-                icon: const Icon(Icons.remove_circle_outline),
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   '${item['quantity']}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  widget.onUpdateQuantity(item['id'], item['quantity'] + 1);
-                },
-                icon: const Icon(Icons.add_circle_outline),
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
               ),
               IconButton(
                 onPressed: () {
