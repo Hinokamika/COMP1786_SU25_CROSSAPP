@@ -30,49 +30,37 @@ class _CartState extends State<Cart> {
 
   void _onCartChanged() {
     if (mounted) {
-      // Add a delay to prevent jarring transitions and scrolling issues
-      Future.delayed(const Duration(milliseconds: 150), () {
-        if (mounted) setState(() {});
-      });
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        switchInCurve: Curves.easeInOut,
-        switchOutCurve: Curves.easeInOut,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        child: _cartService.cartItems.isEmpty
-            ? const EmptyCartWidget(key: ValueKey('empty_cart'))
-            : Column(
-                key: const ValueKey('cart_content'),
-                children: [
-                  CartHeader(
-                    title: 'Shopping Cart',
+      body: _cartService.cartItems.isEmpty
+          ? const EmptyCartWidget()
+          : Column(
+              children: [
+                CartHeader(
+                  title: 'Shopping Cart',
+                  itemCount: _cartService.cartItems.length,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
                     itemCount: _cartService.cartItems.length,
+                    itemBuilder: (context, index) {
+                      final item = _cartService.cartItems[index];
+                      return CartItemCard(
+                        item: item,
+                        onRemove: () => _removeItemFromCart(item),
+                      );
+                    },
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _cartService.cartItems.length,
-                      itemBuilder: (context, index) {
-                        final item = _cartService.cartItems[index];
-                        return CartItemCard(
-                          item: item,
-                          onRemove: () => _removeItemFromCart(item),
-                        );
-                      },
-                    ),
-                  ),
-                  CartSummary(cartService: _cartService),
-                ],
-              ),
-      ),
+                ),
+                CartSummary(cartService: _cartService),
+              ],
+            ),
     );
   }
 
@@ -84,17 +72,15 @@ class _CartState extends State<Cart> {
       confirmText: 'Remove',
       onConfirm: () {
         _cartService.removeFromCart(item['id']);
-        Future.microtask(() {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${item['name']} removed from cart'),
-                backgroundColor: Colors.orange,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
-        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${item['name']} removed from cart'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       },
     );
   }

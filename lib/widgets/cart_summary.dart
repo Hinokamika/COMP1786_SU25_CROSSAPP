@@ -148,18 +148,16 @@ class CartSummary extends StatelessWidget {
       content: 'Are you sure you want to remove all items from your cart?',
       confirmText: 'Clear All',
       onConfirm: () {
-        Future.microtask(() {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Cart cleared successfully'),
-                backgroundColor: Colors.orange,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        });
         cartService.clearCart();
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Cart cleared successfully'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       },
     );
   }
@@ -168,86 +166,60 @@ class CartSummary extends StatelessWidget {
     if (onCheckout != null) {
       // Use custom checkout callback
       onCheckout!();
-    } else {
-      // Prevent multiple simultaneous checkout operations
-      if (_isProcessingCheckout) return;
-      _isProcessingCheckout = true;
+      return;
+    }
 
-      // Default checkout behavior with Firebase save
-      try {
-        // Show loading indicator
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) =>
-              const Center(child: CircularProgressIndicator()),
+    // Prevent multiple simultaneous checkout operations
+    if (_isProcessingCheckout) return;
+    _isProcessingCheckout = true;
+
+    try {
+      // Show checkout dialog with Firebase save
+      await CheckOutDialog.show(
+        context,
+        cartService: cartService,
+        onConfirm: () async {
+          // Save to Firebase first
+          final bool saveSuccess = await cartService.saveCartToFirebase();
+
+          if (saveSuccess) {
+            // Clear cart after successful save
+            cartService.clearCart();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Order confirmed and saved! 🎉'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          } else {
+            // Show error if save failed
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Failed to save order. Please try again.'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        },
+      );
+
+      _isProcessingCheckout = false;
+    } catch (e) {
+      _isProcessingCheckout = false;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error processing order'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
         );
-
-        // Save cart to Firebase
-        final bool saveSuccess = await cartService.saveCartToFirebase();
-
-        // Close loading dialog
-        if (context.mounted) Navigator.of(context).pop();
-
-        if (saveSuccess) {
-          // Show checkout dialog
-          await CheckOutDialog.show(
-            context,
-            cartService: cartService,
-            onConfirm: () {
-              // Clear cart after dialog is closed
-              cartService.clearCart();
-              // Show success message with increased delay to ensure smooth transition
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Order placed and saved successfully! 🎉'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 3),
-                    ),
-                  );
-                }
-              });
-            },
-          );
-
-          // Reset processing flag
-          _isProcessingCheckout = false;
-        } else {
-          _isProcessingCheckout = false;
-          // Show error message
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Failed to save order. Please try again.'),
-                backgroundColor: Colors.red,
-                duration: Duration(seconds: 3),
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        _isProcessingCheckout = false;
-        // Close loading dialog if still open
-        if (context.mounted) {
-          try {
-            Navigator.of(context).pop();
-          } catch (_) {
-            // Dialog might already be closed
-          }
-        }
-
-        // Show error message
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
       }
     }
   }

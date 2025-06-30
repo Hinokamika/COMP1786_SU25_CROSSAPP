@@ -96,15 +96,9 @@ class _CheckOutDialogState extends State<CheckOutDialog> {
         ElevatedButton(
           onPressed: widget.cartService.cartItems.isNotEmpty
               ? () {
-                  // Close dialog first, then execute callback
+                  // Simplified: Just close dialog and execute callback immediately
                   Navigator.of(context).pop(true);
-                  // Execute the confirm callback if provided
-                  if (widget.onConfirm != null) {
-                    // Use Future.microtask to ensure dialog is closed before callback
-                    Future.microtask(() {
-                      widget.onConfirm!();
-                    });
-                  }
+                  widget.onConfirm?.call();
                 }
               : null, // Disable button if cart is empty
           style: ElevatedButton.styleFrom(
