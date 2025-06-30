@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:comp1876_su25_crossapp/auth_service.dart';
-import 'package:crypto/crypto.dart';
+import 'package:comp1876_su25_crossapp/services/session_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -55,42 +53,82 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       return;
     }
+
     try {
-      DatabaseReference userRef = FirebaseDatabase.instance.ref('users');
-      String userId = DateTime.now().millisecondsSinceEpoch.toString();
+      // Step 1: Create Firebase Auth user first
+      UserCredential userCredential = await authServiceProvider.value
+          .createUserWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
 
-      userRef.push().set({
-        'id': userId,
-        'age': _ageController.text,
+      // Step 2: Get the actual Firebase Auth UID
+      String firebaseUid = userCredential.user!.uid;
+
+      // Step 3: Save user data to Realtime Database using the Firebase UID
+      DatabaseReference userRef = FirebaseDatabase.instance.ref(
+        'users/$firebaseUid',
+      );
+
+      Map<String, dynamic> userData = {
+        'uid': firebaseUid, // Use the actual Firebase UID
+        'age': int.parse(_ageController.text),
         'email': _emailController.text,
-        'username': _usernameController.text,
-        'number': _numberController.text,
-      });
+        'name': _usernameController.text,
+        'phone': _numberController.text,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
 
-      // For Firebase Auth, use the original password (Firebase handles its own password hashing)
-      await authServiceProvider.value.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+      await userRef.set(userData);
+
+      // Step 4: Cache user data using SessionService
+      final sessionService = SessionService();
+      await sessionService.cacheUserData(userData);
+
+      // Step 5: Save user preferences (optional)
+      await sessionService.saveUserPreference('isFirstTime', false);
+      await sessionService.saveUserPreference(
+        'registrationDate',
+        DateTime.now().toIso8601String(),
       );
 
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registration successful! User data saved locally.'),
+            content: Text('Registration successful! Welcome to the app!'),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pushNamed(context, '/Login');
+
+        // Navigate to main app (user is automatically logged in)
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/MenuPage',
+          (route) => false,
+        );
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorString = 'Registration failed: ${e.toString()}';
+        errorString = 'Registration failed: ${_getAuthErrorMessage(e)}';
       });
     } catch (e) {
       setState(() {
         errorString = 'Registration failed: ${e.toString()}';
       });
+    }
+  }
+
+  String _getAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'weak-password':
+        return 'The password provided is too weak.';
+      case 'email-already-in-use':
+        return 'An account already exists for that email.';
+      case 'invalid-email':
+        return 'The email address is not valid.';
+      default:
+        return e.message ?? 'An unknown error occurred.';
     }
   }
 

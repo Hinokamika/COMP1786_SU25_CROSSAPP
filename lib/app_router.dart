@@ -25,11 +25,15 @@ class AppRouter extends StatelessWidget {
         '/MenuPage': (context) => const MenuPage(),
         '/IntroPage': (context) => const IntroPage(),
         '/ShowCart': (context) => const Cart(), // Placeholder for cart page
-        '/ProfilePage': (context) => const ProfilePage(), // Placeholder for profile page
-        '/SearchPage': (context) => const SearchPage(), // Placeholder for search page
-        '/NotificationPage': (context) => const NotificationPage(), // Placeholder for notification page
-        '/HomePage': (context) => const HomePage(), 
-        '/ConfirmBillPage': (context) => const ConfirmBillPage(), // Placeholder for confirm bill page
+        '/ProfilePage': (context) =>
+            const ProfilePage(), // Placeholder for profile page
+        '/SearchPage': (context) =>
+            const SearchPage(), // Placeholder for search page
+        '/NotificationPage': (context) =>
+            const NotificationPage(), // Placeholder for notification page
+        '/HomePage': (context) => const HomePage(),
+        '/ConfirmBillPage': (context) =>
+            const ConfirmBillPage(), // Placeholder for confirm bill page
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/') {
@@ -61,9 +65,9 @@ class AuthGate extends StatelessWidget {
             } else {
               return const IntroPage();
             }
-          }
+          },
         );
-      }
+      },
     );
   }
 }
