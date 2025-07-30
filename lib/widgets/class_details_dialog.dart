@@ -8,80 +8,237 @@ class ClassDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Row(
-        children: [
-          Icon(Icons.school, color: const Color(0xFFFF3333), size: 28),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              classData['class_name'] ?? 'Unknown Class',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFFF3333),
-              ),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 16,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 400),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-          ),
-        ],
-      ),
-      content: SingleChildScrollView(
+          ],
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildDetailRow(
-              'Description',
-              classData['description'] ?? 'No description available',
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow('Teacher', classData['teacher'] ?? 'Unknown'),
-            const SizedBox(height: 12),
-            _buildDetailRow('Duration', classData['duration'] ?? '1 hour'),
-            const SizedBox(height: 12),
-            _buildDetailRow(
-              'Day of Week',
-              classData['day_of_week'] ?? 'Not specified',
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow(
-              'Time',
-              classData['time_of_course'] ?? 'Not specified',
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow('Capacity', '${classData['capacity'] ?? 0}'),
-            const SizedBox(height: 12),
-            _buildDetailRow(
-              'Type of Class',
-              classData['type_of_class'] ?? 'Unknown',
-            ),
-            const SizedBox(height: 16),
+            // Header with gradient
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF3333).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFFF3333), width: 1),
+              padding: const EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  Text(
-                    'Price per Class',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.school,
+                      color: Colors.white,
+                      size: 24,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    classData['price_per_class'] ?? 'Free',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF3333),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          classData['class_name'] ?? 'Unknown Class',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          classData['type_of_class'] ?? 'Class Details',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Container(
+              padding: const EdgeInsets.all(24),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDetailRow(
+                      Icons.description,
+                      'Description',
+                      classData['description'] ?? 'No description available',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.person,
+                      'Teacher',
+                      classData['teacherName'] ??
+                          classData['teacher'] ??
+                          'Unknown',
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildDetailRow(
+                            Icons.access_time,
+                            'Duration',
+                            '${classData['duration'] ?? '60'} min',
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildDetailRow(
+                            Icons.people,
+                            'Capacity',
+                            '${classData['capacity'] ?? 0} spots',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.calendar_today,
+                      'Date',
+                      classData['date'] ??
+                          classData['day_of_week'] ??
+                          'Not specified',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.schedule,
+                      'Time',
+                      classData['time_of_course'] ?? 'Not specified',
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Price section
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.attach_money,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Price per Class',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '\$${classData['price'] ?? classData['price_per_class'] ?? '0'}',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Actions
+            Container(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: Colors.grey[300]!),
+                        ),
+                      ),
+                      child: Text(
+                        'Close',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final cartService = CartService();
+                        if (cartService.isInCart(classData['id'])) {
+                          Navigator.of(context).pop('already_in_cart');
+                        } else {
+                          cartService.addToCart(classData);
+                          Navigator.of(context).pop('added_to_cart');
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF667eea),
+                        foregroundColor: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'Add to Cart',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -90,81 +247,59 @@ class ClassDetailsDialog extends StatelessWidget {
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'Close',
-            style: TextStyle(color: Colors.grey[600], fontSize: 16),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            final cartService = CartService();
-            if (cartService.isInCart(classData['id'])) {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${classData['class_name']} is already in your cart',
-                  ),
-                  backgroundColor: Colors.orange,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            } else {
-              cartService.addToCart(classData);
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Added ${classData['class_name']} to cart'),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFF3333),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF667eea).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Icon(icon, size: 16, color: const Color(0xFF667eea)),
           ),
-          child: const Text('Add to Cart'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            '$label:',
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-              color: Colors.black87,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                ),
+              ],
             ),
           ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  static void show(BuildContext context, Map<String, dynamic> classData) {
-    showDialog(
+  static Future<String?> show(
+    BuildContext context,
+    Map<String, dynamic> classData,
+  ) {
+    return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return ClassDetailsDialog(classData: classData);
