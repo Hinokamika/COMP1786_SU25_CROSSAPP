@@ -29,10 +29,16 @@ class CartSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 600;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenWidth < 600 || screenHeight < 700;
 
     return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
+      padding: EdgeInsets.fromLTRB(
+        isSmallScreen ? 6 : 8,
+        isSmallScreen ? 8 : 10,
+        isSmallScreen ? 10 : 12,
+        MediaQuery.of(context).viewInsets.bottom + (isSmallScreen ? 10 : 12),
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -47,25 +53,27 @@ class CartSummary extends StatelessWidget {
           ],
         ),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFF9800).withOpacity(0.2),
-            blurRadius: isSmallScreen ? 12 : 16,
-            offset: const Offset(0, -6),
+            blurRadius: isSmallScreen ? 8 : 12,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTotalRow(isSmallScreen),
-            SizedBox(height: isSmallScreen ? 8 : 12),
-            _buildActionButtons(context, isSmallScreen),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTotalRow(isSmallScreen),
+              SizedBox(height: isSmallScreen ? 8 : 12),
+              _buildActionButtons(context, isSmallScreen),
+            ],
+          ),
         ),
       ),
     );
@@ -73,17 +81,20 @@ class CartSummary extends StatelessWidget {
 
   Widget _buildTotalRow(bool isSmallScreen) {
     return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 8 : 12,
+        vertical: isSmallScreen ? 6 : 8,
+      ),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFF9800), Color(0xFFFFB74D)],
         ),
-        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+        borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFF9800).withOpacity(0.3),
-            blurRadius: isSmallScreen ? 6 : 8,
-            offset: const Offset(0, 3),
+            blurRadius: isSmallScreen ? 4 : 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -96,16 +107,16 @@ class CartSummary extends StatelessWidget {
               Text(
                 'Total Amount',
                 style: TextStyle(
-                  fontSize: isSmallScreen ? 14 : 16,
+                  fontSize: isSmallScreen ? 12 : 14,
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(height: isSmallScreen ? 2 : 4),
+              SizedBox(height: isSmallScreen ? 1 : 2),
               Text(
                 '${cartService.cartItems.length} ${cartService.cartItems.length == 1 ? 'class' : 'classes'}',
                 style: TextStyle(
-                  fontSize: isSmallScreen ? 12 : 14,
+                  fontSize: isSmallScreen ? 10 : 12,
                   color: Colors.white.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                 ),
@@ -114,17 +125,17 @@ class CartSummary extends StatelessWidget {
           ),
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: isSmallScreen ? 12 : 16,
-              vertical: isSmallScreen ? 6 : 8,
+              horizontal: isSmallScreen ? 8 : 12,
+              vertical: isSmallScreen ? 4 : 6,
             ),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
+              borderRadius: BorderRadius.circular(isSmallScreen ? 6 : 8),
             ),
             child: Text(
               '\$${cartService.totalPrice.toStringAsFixed(2)}',
               style: TextStyle(
-                fontSize: isSmallScreen ? 20 : 24,
+                fontSize: isSmallScreen ? 16 : 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -136,8 +147,8 @@ class CartSummary extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context, bool isSmallScreen) {
-    final buttonHeight = isSmallScreen ? 36.0 : 42.0;
-    final spacing = isSmallScreen ? 8.0 : 12.0;
+    final buttonHeight = isSmallScreen ? 48.0 : 56.0;
+    final spacing = isSmallScreen ? 6.0 : 8.0;
 
     return Row(
       children: [
@@ -148,9 +159,9 @@ class CartSummary extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: const Color(0xFFFF5252),
-                  width: isSmallScreen ? 1.5 : 2,
+                  width: isSmallScreen ? 1 : 1.5,
                 ),
-                borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+                borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
               ),
               child: OutlinedButton.icon(
                 onPressed: () {
@@ -159,21 +170,21 @@ class CartSummary extends StatelessWidget {
                 },
                 icon: Icon(
                   Icons.clear_all_rounded,
-                  size: isSmallScreen ? 18 : 20,
+                  size: isSmallScreen ? 16 : 18,
                 ),
                 label: Text(
                   'Clear Cart',
-                  style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+                  style: TextStyle(fontSize: isSmallScreen ? 10 : 12),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFFF5252),
                   side: BorderSide.none,
                   padding: EdgeInsets.symmetric(
-                    vertical: isSmallScreen ? 6 : 8,
+                    vertical: isSmallScreen ? 4 : 6,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
-                      isSmallScreen ? 12 : 16,
+                      isSmallScreen ? 10 : 12,
                     ),
                   ),
                 ),
@@ -188,9 +199,9 @@ class CartSummary extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.grey[400]!,
-                  width: isSmallScreen ? 1.5 : 2,
+                  width: isSmallScreen ? 1 : 1.5,
                 ),
-                borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+                borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
               ),
               child: OutlinedButton.icon(
                 onPressed: () {
@@ -199,21 +210,21 @@ class CartSummary extends StatelessWidget {
                 },
                 icon: Icon(
                   Icons.arrow_back_rounded,
-                  size: isSmallScreen ? 18 : 20,
+                  size: isSmallScreen ? 16 : 18,
                 ),
                 label: Text(
                   backButtonText,
-                  style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+                  style: TextStyle(fontSize: isSmallScreen ? 10 : 12),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.grey[600],
                   side: BorderSide.none,
                   padding: EdgeInsets.symmetric(
-                    vertical: isSmallScreen ? 6 : 8,
+                    vertical: isSmallScreen ? 4 : 6,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
-                      isSmallScreen ? 12 : 16,
+                      isSmallScreen ? 10 : 12,
                     ),
                   ),
                 ),
@@ -232,13 +243,13 @@ class CartSummary extends StatelessWidget {
                     )
                   : null,
               color: cartService.cartItems.isEmpty ? Colors.grey[300] : null,
-              borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+              borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
               boxShadow: cartService.cartItems.isNotEmpty
                   ? [
                       BoxShadow(
                         color: const Color(0xFFFF9800).withOpacity(0.4),
-                        blurRadius: isSmallScreen ? 6 : 8,
-                        offset: const Offset(0, 3),
+                        blurRadius: isSmallScreen ? 4 : 6,
+                        offset: const Offset(0, 2),
                       ),
                     ]
                   : null,
@@ -250,11 +261,11 @@ class CartSummary extends StatelessWidget {
                       _handleCheckout(context);
                     }
                   : null,
-              icon: Icon(Icons.payment_rounded, size: isSmallScreen ? 18 : 20),
+              icon: Icon(Icons.payment_rounded, size: isSmallScreen ? 16 : 18),
               label: Text(
                 checkoutButtonText,
                 style: TextStyle(
-                  fontSize: isSmallScreen ? 12 : 14,
+                  fontSize: isSmallScreen ? 10 : 12,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -262,9 +273,9 @@ class CartSummary extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 6 : 8),
+                padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 6),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+                  borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
                 ),
               ),
             ),

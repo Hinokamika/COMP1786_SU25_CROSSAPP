@@ -224,14 +224,6 @@ class _CheckOutDialogState extends State<CheckOutDialog> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            if (item['teacher'] != null)
-                              Text(
-                                'Teacher: ${item['teacher']}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
                           ],
                         ),
                       ),
@@ -330,10 +322,16 @@ class _CheckOutDialogState extends State<CheckOutDialog> {
                   Navigator.of(context).pop(false);
                 },
                 icon: const Icon(Icons.close_rounded),
-                label: const Text('Cancel'),
+                label: const Text(
+                  'Cancel',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.grey[600],
                   side: BorderSide.none,
+                  minimumSize: const Size(0, 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),

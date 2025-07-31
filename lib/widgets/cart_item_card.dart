@@ -118,21 +118,12 @@ class CartItemCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
             ),
             child: Text(
-              'Teacher: ${item['teacher'] ?? 'Unknown'}',
+              'Duration: ${item['duration'] ?? '1 hour'}',
               style: TextStyle(
                 fontSize: isSmallScreen ? 11 : 13,
                 color: const Color(0xFFFF9800),
                 fontWeight: FontWeight.w600,
               ),
-            ),
-          ),
-          SizedBox(height: isSmallScreen ? 4 : 6),
-          Text(
-            'Duration: ${item['duration'] ?? '1 hour'}',
-            style: TextStyle(
-              fontSize: isSmallScreen ? 12 : 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
             ),
           ),
           SizedBox(height: isSmallScreen ? 8 : 12),
