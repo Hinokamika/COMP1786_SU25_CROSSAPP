@@ -42,10 +42,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // Color scheme for different class types
   final Map<String, List<Color>> _classTypeColors = {
     'Flow Yoga': [const Color(0xFF6B73FF), const Color(0xFF9B59B6)],
-    'Hatha Yoga': [const Color(0xFF00C9FF), const Color(0xFF92FE9D)],
-    'Vinyasa': [const Color(0xFFFC466B), const Color(0xFF3F5EFB)],
-    'Meditation': [const Color(0xFFFFCE56), const Color(0xFFFF8A56)],
-    'Pilates': [const Color(0xFF4ECDC4), const Color(0xFF44A08D)],
+    'Aerial Yoga': [const Color(0xFF00C9FF), const Color(0xFF92FE9D)],
+    'Family Yoga': [const Color(0xFFFC466B), const Color(0xFF3F5EFB)],
     'Default': [const Color(0xFF667eea), const Color(0xFF764ba2)],
   };
 
@@ -117,7 +115,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return 'Unknown Teacher';
       }
     } catch (e) {
-      print('Error fetching teacher name: $e');
       teacherCache[teacherId] = 'Error loading teacher';
       return 'Error loading teacher';
     }

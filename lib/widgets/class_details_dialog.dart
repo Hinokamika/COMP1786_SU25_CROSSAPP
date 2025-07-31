@@ -57,7 +57,7 @@ class ClassDetailsDialog extends StatelessWidget {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class ClassDetailsDialog extends StatelessWidget {
                       'Description',
                       classData['description'] ?? 'No description available',
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _buildDetailRow(
                       Icons.person,
                       'Teacher',
@@ -106,7 +106,7 @@ class ClassDetailsDialog extends StatelessWidget {
                           classData['teacher'] ??
                           'Unknown',
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -116,7 +116,7 @@ class ClassDetailsDialog extends StatelessWidget {
                             '${classData['duration'] ?? '60'} min',
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: _buildDetailRow(
                             Icons.people,
@@ -126,7 +126,7 @@ class ClassDetailsDialog extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _buildDetailRow(
                       Icons.calendar_today,
                       'Date',
@@ -134,13 +134,13 @@ class ClassDetailsDialog extends StatelessWidget {
                           classData['day_of_week'] ??
                           'Not specified',
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _buildDetailRow(
                       Icons.schedule,
                       'Time',
                       classData['time_of_course'] ?? 'Not specified',
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Price section
                     Container(
@@ -159,7 +159,7 @@ class ClassDetailsDialog extends StatelessWidget {
                             color: Colors.white,
                             size: 28,
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 2),
                           Text(
                             'Price per Class',
                             style: TextStyle(
@@ -194,7 +194,7 @@ class ClassDetailsDialog extends StatelessWidget {
                     child: TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: BorderSide(color: Colors.grey[300]!),
@@ -210,7 +210,7 @@ class ClassDetailsDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -252,7 +252,7 @@ class ClassDetailsDialog extends StatelessWidget {
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
@@ -269,7 +269,7 @@ class ClassDetailsDialog extends StatelessWidget {
             ),
             child: Icon(icon, size: 16, color: const Color(0xFF667eea)),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

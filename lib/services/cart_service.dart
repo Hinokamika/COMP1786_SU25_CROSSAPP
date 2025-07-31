@@ -23,30 +23,195 @@ class CartService extends ChangeNotifier {
 
   // Add item to cart
   void addToCart(Map<String, dynamic> classData) {
-    // Check if item already exists in cart
-    final existingIndex = _cartItems.indexWhere(
-      (item) => item['id'] == classData['id'],
-    );
+    try {
+      // Debug: Print incoming data structure
+      if (kDebugMode) {
+        print('CartService: Adding item to cart');
+        print('CartService: Original data keys: ${classData.keys.toList()}');
+        print(
+          'CartService: Sample values - name: ${classData['class_name'] ?? classData['name']}, price: ${classData['price_per_class'] ?? classData['price']}',
+        );
+      }
 
-    if (existingIndex != -1) {
-      // Item already exists, don't add again (quantity stays at 1)
-      return;
-    } else {
-      // Item doesn't exist, add new item with quantity 1
-      final double price = _parsePrice(classData['price_per_class']);
+      // Check if item already exists in cart
+      final String itemId = _extractItemId(classData);
+      final existingIndex = _cartItems.indexWhere(
+        (item) => item['id'] == itemId,
+      );
 
+      if (existingIndex != -1) {
+        // Item already exists, don't add again (quantity stays at 1)
+        if (kDebugMode) {
+          print('CartService: Item with ID $itemId already exists in cart');
+        }
+        return;
+      } else {
+        // Item doesn't exist, add new item with quantity 1
+        final Map<String, dynamic> cartItem = _normalizeClassData(classData);
+
+        if (kDebugMode) {
+          print('CartService: Normalized cart item: ${cartItem.keys.toList()}');
+          print(
+            'CartService: Final item - name: ${cartItem['name']}, price: ${cartItem['price']}, teacher: ${cartItem['teacher']}',
+          );
+        }
+
+        _cartItems.add(cartItem);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) {
+        print('CartService: Error adding item to cart: $e');
+        print('CartService: Problematic data: $classData');
+      }
+      // Still try to add a basic item to prevent app crashes
       _cartItems.add({
-        'id': classData['id'],
-        'name': classData['class_name'] ?? 'Unknown Class',
-        'price': price,
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'name': 'Unknown Class',
+        'price': 0.0,
         'quantity': 1,
-        'teacher': classData['teacher'] ?? 'Unknown Teacher',
-        'duration': classData['duration'] ?? '1 hour',
-        'type': classData['type_of_class'] ?? 'Unknown',
+        'teacher': 'Unknown Teacher',
+        'duration': '1 hour',
+        'type': 'General',
+        'description': '',
+        'location': '',
+        'originalData': classData,
       });
+      notifyListeners();
+    }
+  }
+
+  // Helper method to extract item ID from various possible field names
+  String _extractItemId(Map<String, dynamic> classData) {
+    return classData['id']?.toString() ??
+        classData['classId']?.toString() ??
+        classData['class_id']?.toString() ??
+        classData['key']?.toString() ??
+        DateTime.now().millisecondsSinceEpoch.toString(); // fallback unique ID
+  }
+
+  // Helper method to normalize class data into standardized cart item format
+  Map<String, dynamic> _normalizeClassData(Map<String, dynamic> classData) {
+    // Extract price from multiple possible fields
+    final double price = _extractPrice(classData);
+
+    // Extract teacher name from multiple possible fields
+    final String teacherName = _extractTeacherName(classData);
+
+    // Extract class name from multiple possible fields
+    final String className = _extractClassName(classData);
+
+    // Extract duration from multiple possible fields
+    final String duration = _extractDuration(classData);
+
+    // Extract class type from multiple possible fields
+    final String classType = _extractClassType(classData);
+
+    // Extract additional information that might be useful
+    final String description =
+        classData['description']?.toString() ??
+        classData['class_description']?.toString() ??
+        '';
+
+    final String location =
+        classData['location']?.toString() ??
+        classData['class_location']?.toString() ??
+        '';
+
+    return {
+      'id': _extractItemId(classData),
+      'name': className,
+      'price': price,
+      'quantity': 1,
+      'teacher': teacherName,
+      'duration': duration,
+      'type': classType,
+      'description': description,
+      'location': location,
+      // Keep original data for reference if needed
+      'originalData': Map<String, dynamic>.from(classData),
+    };
+  }
+
+  // Helper method to extract price from various field formats
+  double _extractPrice(Map<String, dynamic> classData) {
+    // Try multiple price field names
+    final dynamic priceValue =
+        classData['price'] ??
+        classData['price_per_class'] ??
+        classData['pricePerClass'] ??
+        classData['cost'] ??
+        classData['amount'] ??
+        0;
+
+    if (priceValue is double) return priceValue;
+    if (priceValue is int) return priceValue.toDouble();
+    if (priceValue is String) return _parsePrice(priceValue);
+
+    return 0.0;
+  }
+
+  // Helper method to extract teacher name from various field formats
+  String _extractTeacherName(Map<String, dynamic> classData) {
+    return classData['teacherName']?.toString() ??
+        classData['teacher']?.toString() ??
+        classData['teacher_name']?.toString() ??
+        classData['instructor']?.toString() ??
+        classData['instructorName']?.toString() ??
+        'Unknown Teacher';
+  }
+
+  // Helper method to extract class name from various field formats
+  String _extractClassName(Map<String, dynamic> classData) {
+    return classData['class_name']?.toString() ??
+        classData['className']?.toString() ??
+        classData['name']?.toString() ??
+        classData['title']?.toString() ??
+        classData['class_title']?.toString() ??
+        'Unknown Class';
+  }
+
+  // Helper method to extract duration from various field formats
+  String _extractDuration(Map<String, dynamic> classData) {
+    final dynamic durationValue =
+        classData['duration'] ??
+        classData['class_duration'] ??
+        classData['time'] ??
+        classData['length'];
+
+    if (durationValue == null) return '1 hour';
+
+    String durationStr = durationValue.toString();
+
+    // If duration is just a number, assume it's minutes
+    if (RegExp(r'^\d+$').hasMatch(durationStr)) {
+      int minutes = int.tryParse(durationStr) ?? 60;
+      if (minutes >= 60) {
+        int hours = minutes ~/ 60;
+        int remainingMinutes = minutes % 60;
+        if (remainingMinutes == 0) {
+          return '$hours hour${hours > 1 ? 's' : ''}';
+        } else {
+          return '${hours}h ${remainingMinutes}m';
+        }
+      } else {
+        return '$minutes minutes';
+      }
     }
 
-    notifyListeners();
+    // If already formatted, return as is
+    return durationStr;
+  }
+
+  // Helper method to extract class type from various field formats
+  String _extractClassType(Map<String, dynamic> classData) {
+    return classData['type_of_class']?.toString() ??
+        classData['typeOfClass']?.toString() ??
+        classData['class_type']?.toString() ??
+        classData['type']?.toString() ??
+        classData['category']?.toString() ??
+        'General';
   }
 
   // Remove item from cart
@@ -69,26 +234,66 @@ class CartService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper method to parse price string
+  // Helper method to parse price string - enhanced for better handling
   double _parsePrice(String? priceString) {
-    if (priceString == null || priceString.toLowerCase() == 'free') {
+    if (priceString == null || priceString.isEmpty) {
       return 0.0;
     }
 
-    // Remove $ sign and any other non-numeric characters except decimal point
-    String cleanPrice = priceString.replaceAll(RegExp(r'[^\d.]'), '');
+    // Convert to lowercase for easier matching
+    String lowerPrice = priceString.toLowerCase().trim();
+
+    // Handle free cases
+    if (lowerPrice == 'free' || lowerPrice == 'no cost' || lowerPrice == '0') {
+      return 0.0;
+    }
+
+    // Remove common currency symbols and characters
+    String cleanPrice = priceString
+        .replaceAll(
+          RegExp(r'[^\d.,]'),
+          '',
+        ) // Keep only digits, dots, and commas
+        .replaceAll(',', ''); // Remove commas used as thousands separators
+
+    // Handle empty string after cleaning
+    if (cleanPrice.isEmpty) {
+      return 0.0;
+    }
+
+    // Parse the cleaned price
     return double.tryParse(cleanPrice) ?? 0.0;
   }
 
-  // Check if item is in cart
-  bool isInCart(String itemId) {
-    return _cartItems.any((item) => item['id'] == itemId);
+  // Check if item is in cart - enhanced to handle various ID formats
+  bool isInCart(dynamic itemIdentifier) {
+    String searchId;
+
+    if (itemIdentifier is Map<String, dynamic>) {
+      // If a full class data object is passed, extract the ID
+      searchId = _extractItemId(itemIdentifier);
+    } else {
+      // If just an ID string is passed
+      searchId = itemIdentifier.toString();
+    }
+
+    return _cartItems.any((item) => item['id'] == searchId);
   }
 
-  // Get quantity of specific item in cart
-  int getItemQuantity(String itemId) {
+  // Get quantity of specific item in cart - enhanced to handle various ID formats
+  int getItemQuantity(dynamic itemIdentifier) {
+    String searchId;
+
+    if (itemIdentifier is Map<String, dynamic>) {
+      // If a full class data object is passed, extract the ID
+      searchId = _extractItemId(itemIdentifier);
+    } else {
+      // If just an ID string is passed
+      searchId = itemIdentifier.toString();
+    }
+
     final item = _cartItems.firstWhere(
-      (item) => item['id'] == itemId,
+      (item) => item['id'] == searchId,
       orElse: () => {'quantity': 0},
     );
     return item['quantity'] ?? 0;
@@ -198,5 +403,56 @@ class CartService extends ChangeNotifier {
       print('Error getting saved carts from Firebase: $e');
       return [];
     }
+  }
+
+  // Debug utility - print expected vs actual data structure
+  void debugDataStructure(Map<String, dynamic> classData) {
+    if (kDebugMode) {
+      print('\n=== CartService Data Structure Analysis ===');
+      print('Expected fields and their current values:');
+      print(
+        'ID: ${_extractItemId(classData)} (from: id, classId, class_id, key)',
+      );
+      print(
+        'Name: ${_extractClassName(classData)} (from: class_name, className, name, title)',
+      );
+      print(
+        'Price: ${_extractPrice(classData)} (from: price, price_per_class, pricePerClass, cost)',
+      );
+      print(
+        'Teacher: ${_extractTeacherName(classData)} (from: teacherName, teacher, teacher_name, instructor)',
+      );
+      print(
+        'Duration: ${_extractDuration(classData)} (from: duration, class_duration, time, length)',
+      );
+      print(
+        'Type: ${_extractClassType(classData)} (from: type_of_class, typeOfClass, class_type, type)',
+      );
+      print('All available keys in data: ${classData.keys.toList()}');
+      print('==========================================\n');
+    }
+  }
+
+  // Utility to get missing required fields
+  List<String> getMissingFields(Map<String, dynamic> classData) {
+    List<String> missing = [];
+
+    if (_extractItemId(classData) ==
+        DateTime.now().millisecondsSinceEpoch.toString()) {
+      missing.add('id (no valid ID field found)');
+    }
+    if (_extractClassName(classData) == 'Unknown Class') {
+      missing.add('class_name (no valid name field found)');
+    }
+    if (_extractPrice(classData) == 0.0 &&
+        !classData.containsKey('price') &&
+        !classData.containsKey('price_per_class')) {
+      missing.add('price (no valid price field found)');
+    }
+    if (_extractTeacherName(classData) == 'Unknown Teacher') {
+      missing.add('teacher (no valid teacher field found)');
+    }
+
+    return missing;
   }
 }

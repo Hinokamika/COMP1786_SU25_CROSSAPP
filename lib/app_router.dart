@@ -6,6 +6,8 @@ import 'package:comp1876_su25_crossapp/pages/main_pages/register_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/cart.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/home_page.dart';
 import 'package:comp1876_su25_crossapp/pages/site_pages/profile_page.dart';
+import 'package:comp1876_su25_crossapp/pages/site_pages/edit_profile_page.dart';
+import 'package:comp1876_su25_crossapp/pages/site_pages/settings_page.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter extends StatelessWidget {
@@ -24,6 +26,8 @@ class AppRouter extends StatelessWidget {
         '/ShowCart': (context) => const Cart(), // Placeholder for cart page
         '/ProfilePage': (context) =>
             const ProfilePage(), // Placeholder for profile page
+        '/EditProfile': (context) => const EditProfilePage(),
+        '/Settings': (context) => const SettingsPage(),
         '/HomePage': (context) => const HomePage(),
       },
       onGenerateRoute: (settings) {

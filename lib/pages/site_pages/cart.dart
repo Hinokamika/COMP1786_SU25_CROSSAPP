@@ -36,31 +36,66 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+
     return Scaffold(
-      body: _cartService.cartItems.isEmpty
-          ? const EmptyCartWidget()
-          : Column(
-              children: [
-                CartHeader(
-                  title: 'Shopping Cart',
-                  itemCount: _cartService.cartItems.length,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _cartService.cartItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _cartService.cartItems[index];
-                      return CartItemCard(
-                        item: item,
-                        onRemove: () => _removeItemFromCart(item),
-                      );
-                    },
-                  ),
-                ),
-                CartSummary(cartService: _cartService),
-              ],
-            ),
+      body: SafeArea(
+        child: _cartService.cartItems.isEmpty
+            ? const EmptyCartWidget()
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  return Column(
+                    children: [
+                      // Header with responsive height
+                      SizedBox(
+                        height: isSmallScreen ? 80 : 95,
+                        child: CartHeader(
+                          title: 'Shopping Cart',
+                          itemCount: _cartService.cartItems.length,
+                        ),
+                      ),
+                      // Main content area
+                      Expanded(
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxHeight:
+                                constraints.maxHeight -
+                                (isSmallScreen ? 150 : 165),
+                          ),
+                          child: ListView.builder(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 10 : 14,
+                              vertical: 8,
+                            ),
+                            itemCount: _cartService.cartItems.length,
+                            itemBuilder: (context, index) {
+                              final item = _cartService.cartItems[index];
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: isSmallScreen ? 6 : 10,
+                                ),
+                                child: CartItemCard(
+                                  item: item,
+                                  onRemove: () => _removeItemFromCart(item),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      // Cart summary with responsive height
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: isSmallScreen ? 70 : 85,
+                        ),
+                        child: CartSummary(cartService: _cartService),
+                      ),
+                    ],
+                  );
+                },
+              ),
+      ),
     );
   }
 
